@@ -1,3 +1,5 @@
+###
+
 http://localhost:3001/users
 
 ###
@@ -6,12 +8,47 @@ POST http://localhost:3001/users HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "ingu",
-    "password" : "manyang",
-    "email" : "nono@cat.co.kr"
+    "name": "david7",
+    "password" : "1234",
+    "email" : "david7@zcube.co.kr"
 }
 
 ###
 
-http://localhost:3001/users/1
+GET http://localhost:3001/users/5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiZGF2aWQ3QHpjdWJlLmNvLmtyIiwiaWF0IjoxNjk1MTg1NzYzLCJleHAiOjE2OTUxODkzNjN9.dD9RXb5Q-cYy7e2N8Bx_RJionGuQk6fSgPzmOBGk3CE
 
+###
+DELETE http://localhost:3001/users/2
+
+###
+POST http://localhost:3001/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "david5@zcube.co.kr",
+    "password" : "$argon2id$v=19$m=65536,t=3,p=4$5WXCuVlZMPGXNyzeMLVAuw$HI02ytU0u5JEiXH9xHXsJde90ZNeHMoG/f2pajcrD/8"
+}
+
+###
+POST http://localhost:3001/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "david6@zcube.co.kr",
+    "password" : "$argon2id$v=19$m=65536,t=3,p=4$5WXCuVlZMPGXNyzeMLVAuw$HI02ytU0u5JEiXH9xHXsJde90ZNeHMoG/f2pajcrD/8"
+}
+
+###
+POST http://localhost:3001/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "david7@zcube.co.kr",
+    "password" : "1234"
+}
+
+###
+
+GET http://localhost:3001/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiZGF2aWQ3QHpjdWJlLmNvLmtyIiwiaWF0IjoxNjk1MTg1NzYzLCJleHAiOjE2OTUxODkzNjN9.dD9RXb5Q-cYy7e2N8Bx_RJionGuQk6fSgPzmOBGk3CE

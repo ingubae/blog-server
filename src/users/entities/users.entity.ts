@@ -1,8 +1,8 @@
-import { BaseEntity, BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import * as argon2 from "argon2";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import * as bcrypt from "bcrypt";
 
-@Entity("users")
-export class User extends BaseEntity {
+@Entity()
+export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -17,7 +17,8 @@ export class User extends BaseEntity {
 
     @BeforeInsert()
     async hashPassword() {
-        this.password = await argon2.hash(this.password);
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
     }
 
     @Column({ default: "" })
