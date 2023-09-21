@@ -1,54 +1,45 @@
-###
+@hostname = localhost
+@port = 3001
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRhdmlkNkB6Y3ViZS5jby5rciIsImlhdCI6MTY5NTI3ODM3NCwiZXhwIjoxNjk1Mjc4Njc0fQ.5z77sID_zpt_GcC1dzwC5YCOESq8PdnFjog55HTbN-E
 
-http://localhost:3001/users
-
-###
-
-POST http://localhost:3001/users HTTP/1.1
-Content-Type: application/json
-
-{
-    "name": "david7",
-    "password" : "1234",
-    "email" : "david7@zcube.co.kr"
-}
 
 ###
 
-GET http://localhost:3001/users/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiZGF2aWQ3QHpjdWJlLmNvLmtyIiwiaWF0IjoxNjk1MTg1NzYzLCJleHAiOjE2OTUxODkzNjN9.dD9RXb5Q-cYy7e2N8Bx_RJionGuQk6fSgPzmOBGk3CE
+GET http://{{host}}/users
 
 ###
-DELETE http://localhost:3001/users/2
-
-###
-POST http://localhost:3001/users/login HTTP/1.1
-Content-Type: application/json
-
-{
-    "email": "david5@zcube.co.kr",
-    "password" : "$argon2id$v=19$m=65536,t=3,p=4$5WXCuVlZMPGXNyzeMLVAuw$HI02ytU0u5JEiXH9xHXsJde90ZNeHMoG/f2pajcrD/8"
-}
-
-###
-POST http://localhost:3001/auth/login HTTP/1.1
-Content-Type: application/json
+POST http://{{host}}/auth/login HTTP/1.1
+Content-Type: {{contentType}}
 
 {
     "email": "david6@zcube.co.kr",
-    "password" : "$argon2id$v=19$m=65536,t=3,p=4$5WXCuVlZMPGXNyzeMLVAuw$HI02ytU0u5JEiXH9xHXsJde90ZNeHMoG/f2pajcrD/8"
-}
-
-###
-POST http://localhost:3001/auth/login HTTP/1.1
-Content-Type: application/json
-
-{
-    "email": "david7@zcube.co.kr",
     "password" : "1234"
 }
 
 ###
 
-GET http://localhost:3001/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiZGF2aWQ3QHpjdWJlLmNvLmtyIiwiaWF0IjoxNjk1MTg1NzYzLCJleHAiOjE2OTUxODkzNjN9.dD9RXb5Q-cYy7e2N8Bx_RJionGuQk6fSgPzmOBGk3CE
+GET http://{{host}}/auth/profile
+Authorization: Bearer {{token}}
+
+###
+
+POST http://{{host}}/users HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "david8",
+    "password" : "1234",
+    "email" : "david8@zcube.co.kr"
+}
+
+###
+
+GET http://{{host}}/users/5
+Authorization: Bearer {{token}}
+
+###
+DELETE http://{{host}}/users/2
+Authorization: Bearer {{token}}

@@ -29,8 +29,13 @@ export class UsersService {
         return this.usersRepository.find();
     }
 
-    async findOneById(id: string): Promise<User | null> {
-        return this.usersRepository.findOneBy({ id: +id });
+    async findOneById(id: string): Promise<any> {
+        const user = await this.usersRepository.findOneBy({ id: +id });
+        if (user) {
+            const { password, ...result } = user;
+            return result;
+        }
+        return null;
     }
 
     async findOneByNmme(name: string): Promise<User | null> {

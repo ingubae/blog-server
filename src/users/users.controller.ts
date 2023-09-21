@@ -21,6 +21,7 @@ import { UpdateResult } from "typeorm";
 // import { Request } from "express";
 import { AuthService } from "src/auth/auth.service";
 import { Public } from "src/auth/constants";
+// import { Public } from "src/auth/constants";
 // import { LoginUserDto } from "src/auth/dto/login-user.dto";
 
 @Controller("users")
@@ -48,7 +49,6 @@ export class UsersController {
     //     return this.authService.jwtLogin(data);
     // }
 
-    @Public()
     @Post()
     create(@Body() createUserDto: CreateUserDto): Promise<User> {
         return this.usersService.create(createUserDto);
