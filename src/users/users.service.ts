@@ -32,6 +32,7 @@ export class UsersService {
     async findOneById(id: string): Promise<any> {
         const user = await this.usersRepository.findOneBy({ id: +id });
         if (user) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { password, ...result } = user;
             return result;
         }

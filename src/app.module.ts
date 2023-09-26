@@ -4,13 +4,19 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 
 // import { PostsModule } from "./posts/posts.module";
-import { UsersModule } from './users/users.module';
+import { UsersModule } from "./users/users.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { typeOrmConfig } from "./configs/typeorm.config"
-import { AuthModule } from './auth/auth.module';
+import { typeOrmConfig } from "./configs/typeorm.config";
+import { AuthModule } from "./auth/auth.module";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
-    imports: [TypeOrmModule.forRoot(typeOrmConfig), UsersModule, AuthModule, ],
+    imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
+        TypeOrmModule.forRoot(typeOrmConfig),
+        UsersModule,
+        AuthModule,
+    ],
     controllers: [AppController],
     providers: [AppService],
 })
