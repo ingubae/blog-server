@@ -12,3 +12,14 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
     entities: [__dirname + "/../**/*.entity.{js,ts}", User],
     synchronize: true,
 };
+
+export const OrmConfig = {
+    ...typeOrmConfig,
+    migrationsTableName: "migrations",
+    migrations: ["migrations/*.ts"],
+    cli: {
+        migrationsDir: "migrations",
+    },
+};
+
+export default OrmConfig;

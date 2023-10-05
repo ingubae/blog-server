@@ -29,8 +29,8 @@ export class UsersService {
         return this.usersRepository.find();
     }
 
-    async findOneById(id: string): Promise<any> {
-        const user = await this.usersRepository.findOneBy({ id: +id });
+    async findOneById(id: number): Promise<any> {
+        const user = await this.usersRepository.findOneBy({ id: id });
         if (user) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { password, ...result } = user;
@@ -47,12 +47,12 @@ export class UsersService {
         return this.usersRepository.findOneBy({ email: email });
     }
 
-    async update(id: string, data: Partial<User>): Promise<UpdateResult> {
+    async update(id: number, data: Partial<User>): Promise<UpdateResult> {
         // const user = this.usersRepository.findOneBy({ id });
         return this.usersRepository.update(id, data);
     }
 
-    async remove(id: string): Promise<void> {
+    async remove(id: number): Promise<void> {
         await this.usersRepository.delete(id);
     }
 }

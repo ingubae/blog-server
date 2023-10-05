@@ -6,7 +6,7 @@ import { AppService } from "./app.service";
 // import { PostsModule } from "./posts/posts.module";
 import { UsersModule } from "./users/users.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { typeOrmConfig } from "./configs/typeorm.config";
+import { typeOrmConfig } from "./configs/ormconfig";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 

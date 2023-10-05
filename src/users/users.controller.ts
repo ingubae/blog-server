@@ -6,6 +6,7 @@ import {
     Patch,
     Param,
     Delete,
+    ParseIntPipe,
     // Req,
     // Res,
     // Session,
@@ -43,17 +44,20 @@ export class UsersController {
 
     @Public()
     @Get(":id")
-    findOne(@Param("id") id: string): Promise<User> {
+    findOne(@Param("id", ParseIntPipe) id: number): Promise<User> {
         return this.usersService.findOneById(id);
     }
 
     @Patch(":id")
-    update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto): Promise<UpdateResult> {
+    update(
+        @Param("id", ParseIntPipe) id: number,
+        @Body() updateUserDto: UpdateUserDto
+    ): Promise<UpdateResult> {
         return this.usersService.update(id, updateUserDto);
     }
 
     @Delete(":id")
-    remove(@Param("id") id: string): Promise<void> {
+    remove(@Param("id", ParseIntPipe) id: number): Promise<void> {
         return this.usersService.remove(id);
     }
 }
