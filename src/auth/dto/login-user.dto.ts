@@ -4,7 +4,7 @@ import { User } from "src/users/entities/users.entity";
 
 // export class LoginUserDto {
 //     @IsNotEmpty()
-//     readonly name: string;
+//     readonly email: string;
 
 //     @IsNotEmpty()
 //     readonly password: string;

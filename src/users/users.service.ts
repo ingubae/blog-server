@@ -1,14 +1,21 @@
 import { Injectable } from "@nestjs/common";
-import { Repository, UpdateResult } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
+import { /*Repository, */ FindOptionsWhere, UpdateResult } from "typeorm";
+// import { InjectRepository } from "@nestjs/typeorm";
+import * as bcrypt from "bcrypt";
 
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./entities/users.entity";
 import { EmailAlreadyExistException } from "./exceptions/exception-email-already-exist";
+import { jwtConstants } from "src/auth/constants";
+import { UserRepository } from "./repository/user.repository";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
+    constructor(
+        // @InjectRepository(User) private usersRepository: Repository<User>
+        private usersRepository: UserRepository
+    ) {}
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         const tempUser = await this.usersRepository.findOneBy({ email: createUserDto.email });
@@ -29,30 +36,80 @@ export class UsersService {
         return this.usersRepository.find();
     }
 
-    async findOneById(id: number): Promise<any> {
-        const user = await this.usersRepository.findOneBy({ id: id });
-        if (user) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { password, ...result } = user;
-            return result;
-        }
-        return null;
-    }
-
-    async findOneByNmme(name: string): Promise<User | null> {
-        return this.usersRepository.findOneBy({ name: name });
-    }
-
-    async findOneByEmail(email: string): Promise<User | null> {
-        return this.usersRepository.findOneBy({ email: email });
+    async findOneBy(where: FindOptionsWhere<User>): Promise<User | null> {
+        return await this.usersRepository.findOneBy(where);
     }
 
     async update(id: number, data: Partial<User>): Promise<UpdateResult> {
-        // const user = this.usersRepository.findOneBy({ id });
         return this.usersRepository.update(id, data);
     }
 
-    async remove(id: number): Promise<void> {
+    async delete(id: number): Promise<void> {
         await this.usersRepository.delete(id);
     }
+
+    async setRefreshToken(id: number, token: string) {
+        const now = new Date();
+        const refreshToken = await bcrypt.hash(token, 10);
+        const refreshTokenExp = new Date(now.getTime() + jwtConstants.refresh_expiry);
+
+        await this.usersRepository.update(id, {
+            refreshToken,
+            refreshTokenExp,
+        });
+    }
+
+    async removeRefreshToken(id: number) {
+        return await this.usersRepository.update(id, {
+            refreshToken: null,
+            refreshTokenExp: null,
+        });
+    }
+
+    async getUserIfTokenMatch(id: number, token: string): Promise<User> {
+        const user: User = await this.findOneBy({ id });
+        if (user?.refreshToken === null) {
+            console.log("user.refreshToken is null");
+            return null;
+        }
+
+        const now = Date.now();
+        if (user?.refreshTokenExp?.getTime() < now) {
+            console.log("user.refreshTokenExp is expired");
+            this.removeRefreshToken(id);
+            return null;
+        }
+
+        const isMatch = await bcrypt.compare(token, user.refreshToken);
+        if (!isMatch) {
+            console.log("refreshToken does not matched");
+            return null;
+        }
+
+        return user;
+    }
+
+    async findUsersWithExpiredTokens(currentTime: number): Promise<User[]> {
+        const queryBuilder = this.usersRepository.createQueryBuilder("user");
+        const users = await queryBuilder
+            .where("user.refreshTokenExp <= :currentTime", {
+                currentTime: new Date(currentTime),
+            })
+            .getMany();
+
+        return users;
+    }
+
+    // @Cron(CronExpression.EVERY_MINUTE)
+    // async removeExpiredTokens() {
+    //     const currentTime = new Date().getTime();
+    //     const users = await this.findUsersWithExpiredTokens(currentTime);
+    //     console.log("removeExpiredTokens(): expired users: ");
+    //     console.log(users);
+    //     for (const user of users) {
+    //         if (user.refreshToken) {
+    //             await this.removeRefreshToken(user.id);
+    //         }
+    //     }
+    // }
 }

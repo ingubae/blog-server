@@ -23,4 +23,10 @@ export class User {
 
     @Column({ default: "" })
     imageLink: string;
+
+    @Column({ nullable: true })
+    refreshToken: string;
+
+    @Column({ type: "timestamp", nullable: true })
+    refreshTokenExp: Date;
 }

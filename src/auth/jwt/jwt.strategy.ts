@@ -1,43 +1,44 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { COOKIE_AUTH_KEY, jwtConstants } from "../constants";
+import { COOKIE_ACCESS_KEY, jwtConstants } from "../constants";
 import { UsersService } from "src/users/users.service";
-import { UserNotFoundException } from "src/users/exceptions/exception-user-not-found";
+// import { UserNotFoundException } from "src/users/exceptions/exception-user-not-found";
 // import { ConfigService } from "@nestjs/config";
 // import { AuthService } from "../auth.service";
+
+export interface Payload {
+    sub: number;
+    email: string;
+    // firstName: string;
+    // lastName: string;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(private readonly usersService: UsersService) {
         super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            // jwtFromRequest: fromAuthCookie(),
+            // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: ExtractJwt.fromExtractors([
+                (req) => {
+                    return req?.cookies?.[COOKIE_ACCESS_KEY];
+                },
+            ]),
             secretOrKey: jwtConstants.secret,
             ignoreExpiration: false,
         });
     }
 
-    async validate(payload: any) {
-        // return { id: payload.sub, email: payload.email };
+    async validate(payload: Payload): Promise<any> {
+        console.log("JwtStrategy::validate()");
+        // console.log(payload);
 
-        const user = await this.usersService.findOneByEmail(payload.email);
-        if (!user) {
-            throw new UserNotFoundException("Not register user!");
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, ...result } = user;
-        return result;
+        return { id: payload.sub, email: payload.email };
+
+        // const user = await this.usersService.findOneBy({ id: payload.sub });
+        // if (!user) {
+        //     return new UnauthorizedException({ message: "Not register user!" });
+        // }
+        // return user;
     }
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const fromAuthCookie = function () {
-    return function (request) {
-        let token = null;
-        if (request && request.cookies) {
-            token = request.cookies[COOKIE_AUTH_KEY];
-        }
-        return token;
-    };
-};

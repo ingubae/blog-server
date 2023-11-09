@@ -17,15 +17,18 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         });
     }
 
-    async validate(request: Request, email: string, password: string): Promise<any> {
-        const contextId = ContextIdFactory.getByRequest(request);
+    async validate(request: Request, email: string, pass: string): Promise<any> {
         // "AuthService" is a request-scoped provider
+        const contextId = ContextIdFactory.getByRequest(request);
         const authService = await this.moduleRef.resolve(AuthService, contextId);
 
-        const user = await authService.validateUser(email, password);
+        const user = await authService.validateUser(email, pass);
         if (!user) {
             throw new UnauthorizedException("Local validate error");
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // const { password, ...result } = user;
         return user;
     }
 }

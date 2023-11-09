@@ -1,23 +1,22 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
-import { COOKIE_ACCESS_KEY, IS_PUBLIC_KEY } from "../constants";
+import { COOKIE_REFRESH_KEY, IS_PUBLIC_KEY, jwtConstants } from "../constants";
 import { JwtService } from "@nestjs/jwt";
-import { Request } from "express";
-import { JwtStrategy } from "./jwt.strategy";
+import { JwtRefreshStrategy } from "./jwt-refresh.strategy";
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard("jwt") {
+export class JwtRefreshGuard extends AuthGuard("jwt-refresh-token") {
     constructor(
         private reflector: Reflector,
         private jwtService: JwtService,
-        private jwtStrategy: JwtStrategy
+        private jwtStrategy: JwtRefreshStrategy
     ) {
         super();
     }
 
     async canActivate(context: ExecutionContext): Promise<any> {
-        console.log("JwtAuthGuard::canActivate()");
+        console.log("JwtRefreshGuard::canActivate()");
 
         // eslint-disable-next-line prettier/prettier
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -34,13 +33,15 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
 
         // try {
         //     const req = context.switchToHttp().getRequest();
-        //     const access_token = this.extractTokenFromCookie(req);
-        //     const payload = await this.jwtService.verify(access_token);
+        //     const refresh_token = req.cookies[COOKIE_REFRESH_KEY];
+        //     const payload = await this.jwtService.verify(refresh_token, {
+        //         secret: jwtConstants.refresh_secret,
+        //     });
         //     if (!payload) {
         //         throw new UnauthorizedException({ message: "token verify failed" });
         //     }
         //     // Do we need to this call ??
-        //     const user = await this.jwtStrategy.validate(payload);
+        //     const user = await this.jwtStrategy.validate(req, payload);
         //     if (!user) {
         //         throw new UnauthorizedException({ message: "user validate failed" });
         //     }
@@ -51,24 +52,5 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
         //     console.log(err);
         //     return false;
         // }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    handleRequest(err, user, _info) {
-        // You can throw an exception based on either "info" or "err" arguments
-        if (err || !user) {
-            throw err || new UnauthorizedException();
-        }
-        return user;
-    }
-
-    private extractTokenFromHeader(req: Request): string | undefined {
-        const [type, token] = req.headers.authorization?.split(" ") ?? [];
-        return type === "Bearer" ? token : undefined;
-    }
-
-    private extractTokenFromCookie(req: Request): string | undefined {
-        const token = req.cookies[COOKIE_ACCESS_KEY];
-        return token;
     }
 }
