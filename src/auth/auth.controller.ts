@@ -85,7 +85,7 @@ export class AuthController {
     async user(@Req() req: any, @Res() res: Response): Promise<any> {
         const user: User = await this.usersService.findOneBy({ id: req.user.id });
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, refreshToken, refreshTokenExp, ...restUser } = user;
+        const { password, refreshToken, ...restUser } = user;
         return res.send(restUser);
     }
 

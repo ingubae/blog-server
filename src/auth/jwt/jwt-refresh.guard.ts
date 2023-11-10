@@ -1,7 +1,7 @@
-import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
-import { COOKIE_REFRESH_KEY, IS_PUBLIC_KEY, jwtConstants } from "../constants";
+import { IS_PUBLIC_KEY } from "../constants";
 import { JwtService } from "@nestjs/jwt";
 import { JwtRefreshStrategy } from "./jwt-refresh.strategy";
 

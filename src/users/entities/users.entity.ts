@@ -29,4 +29,10 @@ export class User {
 
     @Column({ type: "timestamp", nullable: true })
     refreshTokenExp: Date;
+
+    @Column({ nullable: true })
+    twoFASecret: string;
+
+    @Column({ default: false })
+    isTwoFAEnabled: boolean;
 }

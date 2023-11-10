@@ -57,6 +57,11 @@ export class AuthService {
         });
     }
 
+    async generateTwoFAToken(user: User, isSecondFA = false): Promise<string> {
+        const payload = { sub: user.id, email: user.email, isSecondFA: isSecondFA };
+        return this.jwtService.signAsync(payload);
+    }
+
     async refresh(refresh_token: string): Promise<{ accessToken: string }> {
         try {
             const decodedToken: Payload = this.jwtService.verify(refresh_token, {

@@ -5,13 +5,15 @@ import { COOKIE_ACCESS_KEY, IS_PUBLIC_KEY } from "../constants";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { JwtStrategy } from "./jwt.strategy";
+import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {
     constructor(
         private reflector: Reflector,
         private jwtService: JwtService,
-        private jwtStrategy: JwtStrategy
+        private jwtStrategy: JwtStrategy,
+        private usersService: UsersService
     ) {
         super();
     }
@@ -37,15 +39,15 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
         //     const access_token = this.extractTokenFromCookie(req);
         //     const payload = await this.jwtService.verify(access_token);
         //     if (!payload) {
-        //         throw new UnauthorizedException({ message: "token verify failed" });
+        //         return false;
         //     }
-        //     // Do we need to this call ??
-        //     const user = await this.jwtStrategy.validate(payload);
+        //     // const user = await this.jwtStrategy.validate(payload);
+        //     const user = await this.usersService.findOneBy({ id: payload.sub });
         //     if (!user) {
-        //         throw new UnauthorizedException({ message: "user validate failed" });
+        //         return false;
         //     }
-        //     req.user = user;
 
+        //     req.user = user;
         //     return true;
         // } catch (err) {
         //     console.log(err);

@@ -100,16 +100,35 @@ export class UsersService {
         return users;
     }
 
-    // @Cron(CronExpression.EVERY_MINUTE)
-    // async removeExpiredTokens() {
-    //     const currentTime = new Date().getTime();
-    //     const users = await this.findUsersWithExpiredTokens(currentTime);
-    //     console.log("removeExpiredTokens(): expired users: ");
-    //     console.log(users);
-    //     for (const user of users) {
-    //         if (user.refreshToken) {
-    //             await this.removeRefreshToken(user.id);
-    //         }
-    //     }
-    // }
+    @Cron(CronExpression.EVERY_10_MINUTES)
+    async removeExpiredTokens() {
+        const currentTime = new Date().getTime();
+        const users = await this.findUsersWithExpiredTokens(currentTime);
+        console.log("removeExpiredTokens(): expired users: ");
+        console.log(users);
+        for (const user of users) {
+            if (user.refreshToken) {
+                await this.removeRefreshToken(user.id);
+            }
+        }
+    }
+
+    async setTwoFASecret(id: number, secret: string): Promise<UpdateResult> {
+        return this.usersRepository.update(id, {
+            twoFASecret: secret,
+        });
+    }
+
+    async turnOnTwoFA(id: number): Promise<UpdateResult> {
+        return await this.usersRepository.update(id, {
+            isTwoFAEnabled: true,
+        });
+    }
+
+    async turnOffTwoFA(id: number): Promise<UpdateResult> {
+        return await this.usersRepository.update(id, {
+            twoFASecret: null,
+            isTwoFAEnabled: false,
+        });
+    }
 }
